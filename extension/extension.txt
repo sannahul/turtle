@@ -1,0 +1,57 @@
+Extension: user can define and use functions
+
+- User must set the functions on top of the main with "FUNCTION",
+  followed by function name given by the user and opening curly bracket.
+- Max length of the function is 10 characters and it must be
+  in upper case letters.
+- The program checks that the name is valid, stores the function, 
+  checks that opening and closing curly brackets match and that the
+  function doesn't call itself. Not allowing recursion is a choice 
+  I made. Allowing the function to call itself wouldn't crash the code
+  but the turtle would go into infinite loop, however, you could still
+  exit from it by clicking the mouse or keyboard.
+- The function is stored in a hashtable that doubles its size if it gets too
+  full. This allows the user to write as many functions that he/she wants
+- The rest of parsing (checking that the instructions are valid) 
+  is done at the same time with interpreting when the function is 
+  called inside the main function.
+- The function is called with instruction "FUNC" followed by the
+  function name.
+- The variables are considered as "global": if the variable has been set
+  in main before calling the function, it has the same value in the function
+  as well. Also, if the value is changed inside the function it remains
+  that even after the function is finished.
+
+Example of valid input file:
+
+FUNCTION STAR {
+   FD A
+   LT 45
+   FD A
+   RT 90
+}
+
+{
+   DO A FROM 1 TO 100 {
+      FUNC STAR
+   }
+}
+
+Amended grammar:
+
+<PROG> ::= <SET_FUNCTION><PROG> | "{" <INSTRCTLST>
+<SET_FUNCTION> ::= "FUNCTION" <FNAME> "{" <INSTRCTLST>
+<FNAME> ::= string
+<INSTRCTLST> ::= <INSTRUCTION><INSTRCTLST> | "}"
+<INSTRUCTION> ::= <FD> | <LT> | <RT> | <DO> | <SET> | <FUNC>
+<FD> ::= "FD" <VARNUM>
+<LT> ::= "LT" <VARNUM>
+<RT> ::= "RT" <VARNUM>
+<DO> ::= "DO" <VAR> "FROM" <VARNUM> "TO" <VARNUM> "{" <INSTRCTLST>
+<FUNC> ::= "FUNC" <FNAME>
+<VAR> ::= [A-Z]
+
+<VARNUM> ::= number | <VAR>
+<SET> ::= "SET" <VAR> ":=" <POLISH>
+<POLISH> ::= <OP> <POLISH> | <VARNUM> <POLISH> | ";"
+<OP> ::= "+" | "-" | "*" | "/"
